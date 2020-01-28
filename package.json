@@ -1,7 +1,9 @@
 {
   "name": "promise-call-limit",
-  "version": "0.0.0",
-  "files": ["index.js"],
+  "version": "1.0.0",
+  "files": [
+    "index.js"
+  ],
   "description": "Call an array of promise-returning functions, restricting concurrency to a specified limit.",
   "repository": {
     "type": "git",
