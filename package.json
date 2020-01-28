@@ -22,5 +22,8 @@
   },
   "devDependencies": {
     "tap": "^14.10.6"
+  },
+  "funding": {
+    "url": "https://github.com/sponsors/isaacs"
   }
 }
