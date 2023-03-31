@@ -21,7 +21,7 @@
     "check-coverage": true
   },
   "devDependencies": {
-    "tap": "^14.10.6"
+    "tap": "^16.0.0"
   },
   "funding": {
     "url": "https://github.com/sponsors/isaacs"
