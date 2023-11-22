@@ -10,18 +10,24 @@ const promiseCallLimit = require('promise-call-limit')
 const things = getLongListOfThingsToFrobulate()
 
 // frobulate no more than 4 things in parallel
-promiseCallLimit(things.map(thing => () => frobulateThing(thing)), 4)
+promiseCallLimit(things.map(thing => () => frobulateThing(thing)), {
+limit: 4 })
   .then(results => console.log('frobulated 4 at a time', results))
 ```
 
 ## API
 
-### promiseCallLimit(queue Array<() => Promise>, limit = defaultLimit)
+### promiseCallLimit(queue Array<() => Promise>, opts<Object>)
 
-The default limit is the number of CPUs on the system - 1, or 1.
-
-The reason for subtracting one is that presumably the main thread is taking
-up a CPU as well, so let's not be greedy.
+opts can contain:
+  - limit: specified concurrency limit. Defaults to the number of
+    CPUs on the system minus one. Presumably the main thread is taking
+    up a CPU as well, so let's not be greedy.  In the case where there
+    is only one cpu the limit will default to 1.
+  - rejectLate: if true, then any rejection will not prevent the rest of
+    the queue from running.  Any subsequent rejections will be ignored,
+    and the first rejection will be what the function finally rejects
+    with.
 
 Note that the array should be a list of Promise-_returning_ functions, not
 Promises themselves.  If you have a bunch of Promises already, you're best

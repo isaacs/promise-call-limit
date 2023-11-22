@@ -5,20 +5,24 @@ const os = require('os')
 
 /* istanbul ignore next - version-specific workaround */
 const defLimit = 'availableParallelism' in os
-  ? os.availableParallelism()
-  : Math.max(1, os.cpus().length)
+  ? Math.max(1, os.availableParallelism() - 1)
+  : Math.max(1, os.cpus().length - 1)
 
-const callLimit = (queue, limit = defLimit) => new Promise((res, rej) => {
+const callLimit = (queue, { limit = defLimit, rejectLate } = {}) => new Promise((res, rej) => {
   let active = 0
   let current = 0
   const results = []
 
+  // Whether or not we rejected, distinct from the rejection just in case the rejection itself is falsey
   let rejected = false
+  let rejection
   const reject = er => {
     if (rejected)
       return
     rejected = true
-    rej(er)
+    rejection = er
+    if (!rejectLate)
+      rej(rejection)
   }
 
   let resolved = false
@@ -31,22 +35,27 @@ const callLimit = (queue, limit = defLimit) => new Promise((res, rej) => {
 
   const run = () => {
     const c = current++
-    if (c >= queue.length) {
-      return resolve()
-    }
+    if (c >= queue.length)
+      return rejected ? reject() : resolve()
 
     active ++
     results[c] = queue[c]().then(result => {
       active --
       results[c] = result
+      return result
+    }, (er) => {
+      active --
+      reject(er)
+    }).then(result => {
+      if (rejected && active === 0)
+        return rej(rejection)
       run()
       return result
-    }, reject)
+    })
   }
 
-  for (let i = 0; i < limit; i++) {
+  for (let i = 0; i < limit; i++)
     run()
-  }
 })
 
 module.exports = callLimit
