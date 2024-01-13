@@ -6,18 +6,20 @@ specified limit.
 ## USAGE
 
 ```js
-const promiseCallLimit = require('promise-call-limit')
+import { callLimit } from 'promise-call-limit'
+// or: const { callLimit } = require('promise-call-limit')
+
 const things = getLongListOfThingsToFrobulate()
 
 // frobulate no more than 4 things in parallel
-promiseCallLimit(things.map(thing => () => frobulateThing(thing)), {
+callLimit(things.map(thing => () => frobulateThing(thing)), {
 limit: 4 })
   .then(results => console.log('frobulated 4 at a time', results))
 ```
 
 ## API
 
-### promiseCallLimit(queue Array<() => Promise>, opts<Object>)
+### callLimit(queue Array<() => Promise>, opts<Object>)
 
 opts can contain:
   - limit: specified concurrency limit. Defaults to the number of
