@@ -5,9 +5,9 @@ import * as os from 'node:os'
 
 /* c8 ignore start */
 const defLimit =
-  'availableParallelism' in os
-    ? Math.max(1, os.availableParallelism() - 1)
-    : Math.max(1, (os as typeof import('node:os')).cpus().length - 1)
+  'availableParallelism' in os ?
+    Math.max(1, os.availableParallelism() - 1)
+  : Math.max(1, (os as typeof import('node:os')).cpus().length - 1)
 /* c8 ignore stop */
 
 export type Step<T> = () => Promise<T>
